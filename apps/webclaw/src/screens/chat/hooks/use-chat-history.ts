@@ -268,6 +268,11 @@ function mergeOptimisticHistoryMessages(
       const optimisticText = textFromMessage(optimisticMessage)
       if (!optimisticText) return false
       if (optimisticText !== textFromMessage(serverMessage)) return false
+      // When server has no clientId/__optimisticId (e.g. PicoClaw), match by role+text only
+      const serverHasNoId =
+        !serverMessage.clientId &&
+        !(serverMessage as { __optimisticId?: string }).__optimisticId
+      if (serverHasNoId) return true
       const optimisticTime = getMessageTimestamp(optimisticMessage)
       const serverTime = getMessageTimestamp(serverMessage)
       return Math.abs(optimisticTime - serverTime) <= 10000

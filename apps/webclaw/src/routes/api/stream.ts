@@ -52,12 +52,24 @@ export const Route = createFileRoute('/api/stream')({
                   send({ event: 'error', payload: error.message })
                 },
               })
-                .then((handle) => {
+                .then(async (handle) => {
                   if (closed) {
                     handle.release()
                     return
                   }
                   releaseClient = handle.release
+                  try {
+                    await gatewayRpcShared(
+                      'chat.subscribe',
+                      {
+                        sessionKey: sessionKey || undefined,
+                        friendlyId: friendlyId || undefined,
+                      },
+                      key,
+                    )
+                  } catch {
+                    // Subscribe best-effort; stream may still receive events (e.g. OpenClaw broadcasts to all)
+                  }
                   if (sessionKey) {
                     void gatewayRpcShared(
                       'chat.history',
