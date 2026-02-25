@@ -19,6 +19,8 @@ import { Route as ApiSendRouteImport } from './routes/api/send'
 import { Route as ApiPingRouteImport } from './routes/api/ping'
 import { Route as ApiPathsRouteImport } from './routes/api/paths'
 import { Route as ApiHistoryRouteImport } from './routes/api/history'
+import { Route as ApiAuthUnlockRouteImport } from './routes/api/auth/unlock'
+import { Route as ApiAuthLockRouteImport } from './routes/api/auth/lock'
 
 const NewRoute = NewRouteImport.update({
   id: '/new',
@@ -70,6 +72,16 @@ const ApiHistoryRoute = ApiHistoryRouteImport.update({
   path: '/api/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthUnlockRoute = ApiAuthUnlockRouteImport.update({
+  id: '/api/auth/unlock',
+  path: '/api/auth/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthLockRoute = ApiAuthLockRouteImport.update({
+  id: '/api/auth/lock',
+  path: '/api/auth/lock',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/api/sessions': typeof ApiSessionsRoute
   '/api/stream': typeof ApiStreamRoute
   '/chat/$sessionKey': typeof ChatSessionKeyRoute
+  '/api/auth/lock': typeof ApiAuthLockRoute
+  '/api/auth/unlock': typeof ApiAuthUnlockRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/api/sessions': typeof ApiSessionsRoute
   '/api/stream': typeof ApiStreamRoute
   '/chat/$sessionKey': typeof ChatSessionKeyRoute
+  '/api/auth/lock': typeof ApiAuthLockRoute
+  '/api/auth/unlock': typeof ApiAuthUnlockRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/api/sessions': typeof ApiSessionsRoute
   '/api/stream': typeof ApiStreamRoute
   '/chat/$sessionKey': typeof ChatSessionKeyRoute
+  '/api/auth/lock': typeof ApiAuthLockRoute
+  '/api/auth/unlock': typeof ApiAuthUnlockRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +139,8 @@ export interface FileRouteTypes {
     | '/api/sessions'
     | '/api/stream'
     | '/chat/$sessionKey'
+    | '/api/auth/lock'
+    | '/api/auth/unlock'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +153,8 @@ export interface FileRouteTypes {
     | '/api/sessions'
     | '/api/stream'
     | '/chat/$sessionKey'
+    | '/api/auth/lock'
+    | '/api/auth/unlock'
   id:
     | '__root__'
     | '/'
@@ -145,6 +167,8 @@ export interface FileRouteTypes {
     | '/api/sessions'
     | '/api/stream'
     | '/chat/$sessionKey'
+    | '/api/auth/lock'
+    | '/api/auth/unlock'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +182,8 @@ export interface RootRouteChildren {
   ApiSessionsRoute: typeof ApiSessionsRoute
   ApiStreamRoute: typeof ApiStreamRoute
   ChatSessionKeyRoute: typeof ChatSessionKeyRoute
+  ApiAuthLockRoute: typeof ApiAuthLockRoute
+  ApiAuthUnlockRoute: typeof ApiAuthUnlockRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +258,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/unlock': {
+      id: '/api/auth/unlock'
+      path: '/api/auth/unlock'
+      fullPath: '/api/auth/unlock'
+      preLoaderRoute: typeof ApiAuthUnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/lock': {
+      id: '/api/auth/lock'
+      path: '/api/auth/lock'
+      fullPath: '/api/auth/lock'
+      preLoaderRoute: typeof ApiAuthLockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSessionsRoute: ApiSessionsRoute,
   ApiStreamRoute: ApiStreamRoute,
   ChatSessionKeyRoute: ChatSessionKeyRoute,
+  ApiAuthLockRoute: ApiAuthLockRoute,
+  ApiAuthUnlockRoute: ApiAuthUnlockRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

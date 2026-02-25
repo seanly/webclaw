@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+import { LockScreenGate } from '../components/lock-screen-gate'
 import appCss from '../styles.css?url'
 
 const themeScript = `
@@ -94,7 +95,7 @@ const queryClient = new QueryClient()
 function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <LockScreenGate />
     </QueryClientProvider>
   )
 }
