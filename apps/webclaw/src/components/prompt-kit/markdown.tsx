@@ -1,7 +1,8 @@
 import { memo } from 'react'
-import { Streamdown } from 'streamdown'
+import { Streamdown, defaultRehypePlugins } from 'streamdown'
 import { math } from '@streamdown/math'
 import { mermaid } from '@streamdown/mermaid'
+import { rehypeNormalizeMathArray } from './rehype-normalize-math-array'
 import { ArtifactBlock } from './artifact-block'
 import { CodeBlock } from './code-block'
 import { MermaidFallback } from './mermaid-fallback'
@@ -175,6 +176,7 @@ function MarkdownComponent({
       className={cn('flex flex-col gap-2', className)}
       components={components}
       plugins={{ math, mermaid }}
+      rehypePlugins={[rehypeNormalizeMathArray(), ...Object.values(defaultRehypePlugins)]}
     >
       {children}
     </Streamdown>
