@@ -1,6 +1,10 @@
 import { memo } from 'react'
 import { Streamdown } from 'streamdown'
+import { math } from '@streamdown/math'
+import { mermaid } from '@streamdown/mermaid'
+import { ArtifactBlock } from './artifact-block'
 import { CodeBlock } from './code-block'
+import { MermaidFallback } from './mermaid-fallback'
 import { cn } from '@/lib/utils'
 
 export type MarkdownProps = {
@@ -12,6 +16,10 @@ export type MarkdownProps = {
 
 function extractLanguage(className?: string): string {
   if (!className) return 'text'
+  if (className.includes('language-artifact')) {
+    const match = className.match(/language-(artifact(?::[^\s]+)?)/)
+    return match ? match[1] : 'artifact'
+  }
   const match = className.match(/language-(\w+)/)
   return match ? match[1] : 'text'
 }
@@ -29,9 +37,23 @@ const INITIAL_COMPONENTS: Record<string, React.ComponentType<any>> = {
     }
 
     const language = extractLanguage(className)
+    const content = String(children ?? '')
+
+    if (language === 'artifact' || language.startsWith('artifact:')) {
+      const title =
+        language === 'artifact' ? undefined : language.slice('artifact:'.length)
+      return (
+        <ArtifactBlock content={content} title={title} className="w-full" />
+      )
+    }
+
+    if (language === 'mermaid') {
+      return <MermaidFallback content={content} className="w-full" />
+    }
+
     return (
       <CodeBlock
-        content={String(children ?? '')}
+        content={content}
         language={language}
         className="w-full"
       />
@@ -152,6 +174,7 @@ function MarkdownComponent({
     <Streamdown
       className={cn('flex flex-col gap-2', className)}
       components={components}
+      plugins={{ math, mermaid }}
     >
       {children}
     </Streamdown>
