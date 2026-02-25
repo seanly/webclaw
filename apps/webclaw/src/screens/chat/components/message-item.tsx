@@ -259,6 +259,22 @@ function MessageItemComponent({
 
   const assistantParts = Array.isArray(message.content) ? message.content : []
 
+  if (isToolResult && !settings.showToolMessages) {
+    return null
+  }
+
+  const hasVisibleAssistantContent =
+    isAssistant &&
+    assistantParts.some((part) => {
+      if (part.type === 'text') return Boolean(String(part.text ?? '').trim())
+      if (part.type === 'thinking')
+        return settings.showReasoningBlocks && Boolean(String(part.thinking ?? '').trim())
+      return settings.showToolMessages
+    })
+  if (isAssistant && !hasVisibleAssistantContent) {
+    return null
+  }
+
   function renderAssistantPart(part: MessageContentPart, index: number) {
     if (part.type === 'thinking') {
       const thinking = String(part.thinking ?? '')
