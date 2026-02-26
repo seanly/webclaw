@@ -15,12 +15,20 @@ export function deriveFriendlyIdFromKey(key: string | undefined): string {
   return tailTrimmed.length > 0 ? tailTrimmed : trimmed
 }
 
+/** Strip model reasoning tags that can leak into visible/copy text (e.g. </think>). */
+export function stripThinkTags(text: string): string {
+  return text
+    .replace(/<\/?think\s*>/gi, '')
+    .trim()
+}
+
 export function textFromMessage(msg: GatewayMessage): string {
   const parts = Array.isArray(msg.content) ? msg.content : []
-  return parts
+  const raw = parts
     .map((part) => (part.type === 'text' ? String(part.text ?? '') : ''))
     .join('')
     .trim()
+  return stripThinkTags(raw)
 }
 
 export function getToolCallsFromMessage(

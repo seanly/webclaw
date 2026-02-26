@@ -2,6 +2,7 @@ import { memo } from 'react'
 import {
   getMessageTimestamp,
   getToolCallsFromMessage,
+  stripThinkTags,
   textFromMessage,
 } from '../utils'
 import { MessageActionsBar } from './message-actions-bar'
@@ -287,7 +288,7 @@ function MessageItemComponent({
     }
 
     if (part.type === 'text') {
-      const chunk = String(part.text ?? '')
+      const chunk = stripThinkTags(String(part.text ?? ''))
       if (!chunk.trim()) return null
       return (
         <Message key={`text-${index}`}>
