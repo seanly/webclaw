@@ -18,6 +18,8 @@ import {
   MenuTrigger,
 } from '@/components/ui/menu'
 
+const ACTIVE_WINDOW_MS = 5 * 60 * 1000
+
 type SessionItemProps = {
   session: SessionMeta
   active: boolean
@@ -39,6 +41,12 @@ function SessionItemComponent({
 }: SessionItemProps) {
   const label =
     session.label || session.title || session.derivedTitle || session.friendlyId
+  const updatedAt = session.updatedAt
+  const isRecentlyActive =
+    typeof updatedAt === 'number' &&
+    Number.isFinite(updatedAt) &&
+    Date.now() - updatedAt < ACTIVE_WINDOW_MS
+  const emoji = isRecentlyActive ? '🗣️' : '🤫'
 
   return (
     <Link
@@ -55,7 +63,9 @@ function SessionItemComponent({
       )}
     >
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-[450] line-clamp-1">{label}</div>
+        <div className="text-sm font-[450] line-clamp-1">
+          {emoji} {label}
+        </div>
       </div>
       <div className="inline-flex items-center">
         <MenuRoot>
