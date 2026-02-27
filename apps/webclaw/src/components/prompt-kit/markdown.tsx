@@ -27,7 +27,9 @@ function extractLanguage(className?: string): string {
 
 const INITIAL_COMPONENTS: Record<string, React.ComponentType<any>> = {
   code: function CodeComponent({ className, children }) {
-    const isInline = !className?.includes('language-')
+    const content = String(children ?? '')
+    const isInline =
+      !className?.includes('language-') && !content.includes('\n')
 
     if (isInline) {
       return (
@@ -38,7 +40,6 @@ const INITIAL_COMPONENTS: Record<string, React.ComponentType<any>> = {
     }
 
     const language = extractLanguage(className)
-    const content = String(children ?? '')
 
     if (language === 'artifact' || language.startsWith('artifact:')) {
       const title =
