@@ -41,8 +41,11 @@ import { useChatPendingSend } from './hooks/use-chat-pending-send'
 import { useChatGenerationGuard } from './hooks/use-chat-generation-guard'
 import { shouldRedirectToConnect } from './hooks/use-chat-error-state'
 import { useChatRedirect } from './hooks/use-chat-redirect'
+import { useRenameSession } from './hooks/use-rename-session'
+import { SessionRenameDialog } from './components/sidebar/session-rename-dialog'
 import type { AttachmentFile } from '@/components/attachment-button'
 import type { ChatComposerHelpers } from './components/chat-composer'
+import type { SessionMeta } from './types'
 import { useExport } from '@/hooks/use-export'
 import { useChatSettings } from '@/hooks/use-chat-settings'
 import { cn, randomUUID } from '@/lib/utils'
@@ -76,7 +79,11 @@ export function ChatScreen({
   const [pinToTop, setPinToTop] = useState(
     () => hasPendingSend() || hasPendingGeneration(),
   )
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [renameSessionKey, setRenameSessionKey] = useState<string | null>(null)
+  const [renameSessionTitle, setRenameSessionTitle] = useState('')
   const { settings } = useChatSettings()
+  const { renameSession } = useRenameSession()
   const pendingRunIdsRef = useRef(new Set<string>())
   const pendingRunTimersRef = useRef(new Map<string, number>())
   const { isMobile } = useChatMobile(queryClient)
@@ -147,6 +154,23 @@ export function ChatScreen({
     setIsRedirecting(true)
     navigate({ to: '/new', replace: true })
   }, [navigate])
+
+  const handleOpenRename = useCallback((session: SessionMeta) => {
+    setRenameSessionKey(session.key)
+    setRenameSessionTitle(
+      session.label || session.title || session.derivedTitle || '',
+    )
+    setRenameDialogOpen(true)
+  }, [])
+
+  function handleSaveRename(newTitle: string) {
+    if (renameSessionKey) {
+      void renameSession(renameSessionKey, newTitle)
+    }
+    setRenameDialogOpen(false)
+    setRenameSessionKey(null)
+  }
+
   const stableContentStyle = useMemo<React.CSSProperties>(() => ({}), [])
   const missingSessionError =
     isSessionNotFound(historyError ?? '') ||
@@ -556,6 +580,7 @@ export function ChatScreen({
       onToggleCollapse={handleToggleSidebarCollapse}
       onSelectSession={handleSelectSession}
       onActiveSessionDelete={handleActiveSessionDelete}
+      onOpenRenameRequest={handleOpenRename}
     />
   )
 
@@ -592,6 +617,11 @@ export function ChatScreen({
             wrapperRef={headerRef}
             showSidebarButton={isMobile}
             onOpenSidebar={handleOpenSidebar}
+            onEditTitle={
+              activeSession && !isNewChat
+                ? () => handleOpenRename(activeSession)
+                : undefined
+            }
             onExport={exportConversation}
             exportDisabled={historyLoading || displayMessages.length === 0}
             showExport={!isNewChat}
@@ -624,6 +654,21 @@ export function ChatScreen({
           )}
         </main>
       </div>
+
+      <SessionRenameDialog
+        key={renameSessionKey ?? 'closed'}
+        open={renameDialogOpen}
+        onOpenChange={(open) => {
+          setRenameDialogOpen(open)
+          if (!open) setRenameSessionKey(null)
+        }}
+        sessionTitle={renameSessionTitle}
+        onSave={handleSaveRename}
+        onCancel={() => {
+          setRenameDialogOpen(false)
+          setRenameSessionKey(null)
+        }}
+      />
     </div>
   )
 }

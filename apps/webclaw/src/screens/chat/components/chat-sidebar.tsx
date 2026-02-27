@@ -10,10 +10,8 @@ import { memo, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useChatSettings } from '../hooks/use-chat-settings'
 import { useDeleteSession } from '../hooks/use-delete-session'
-import { useRenameSession } from '../hooks/use-rename-session'
 import { useSessionShortcuts } from '../hooks/use-session-shortcuts'
 import { SettingsDialog } from './settings-dialog'
-import { SessionRenameDialog } from './sidebar/session-rename-dialog'
 import { SessionDeleteDialog } from './sidebar/session-delete-dialog'
 import { SidebarSessions } from './sidebar/sidebar-sessions'
 import { CommandSessionDialog } from './command-session'
@@ -37,6 +35,7 @@ type ChatSidebarProps = {
   onToggleCollapse: () => void
   onSelectSession?: () => void
   onActiveSessionDelete?: () => void
+  onOpenRenameRequest?: (session: SessionMeta) => void
 }
 
 function ChatSidebarComponent({
@@ -48,6 +47,7 @@ function ChatSidebarComponent({
   onToggleCollapse,
   onSelectSession,
   onActiveSessionDelete,
+  onOpenRenameRequest,
 }: ChatSidebarProps) {
   const {
     settingsOpen,
@@ -61,15 +61,10 @@ function ChatSidebarComponent({
     copyStorePath,
   } = useChatSettings()
   const { deleteSession } = useDeleteSession()
-  const { renameSession } = useRenameSession()
   const transition = {
     duration: 0.15,
     ease: isCollapsed ? 'easeIn' : 'easeOut',
   } as const
-
-  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
-  const [renameSessionKey, setRenameSessionKey] = useState<string | null>(null)
-  const [renameSessionTitle, setRenameSessionTitle] = useState('')
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteSessionKey, setDeleteSessionKey] = useState<string | null>(null)
@@ -97,19 +92,7 @@ function ChatSidebarComponent({
   }
 
   function handleOpenRename(session: SessionMeta) {
-    setRenameSessionKey(session.key)
-    setRenameSessionTitle(
-      session.label || session.title || session.derivedTitle || '',
-    )
-    setRenameDialogOpen(true)
-  }
-
-  function handleSaveRename(newTitle: string) {
-    if (renameSessionKey) {
-      void renameSession(renameSessionKey, newTitle)
-    }
-    setRenameDialogOpen(false)
-    setRenameSessionKey(null)
+    onOpenRenameRequest?.(session)
   }
 
   function handleOpenDelete(session: SessionMeta) {
@@ -355,14 +338,6 @@ function ChatSidebarComponent({
         onClose={closeSettings}
         onCopySessionsDir={copySessionsDir}
         onCopyStorePath={copyStorePath}
-      />
-
-      <SessionRenameDialog
-        open={renameDialogOpen}
-        onOpenChange={setRenameDialogOpen}
-        sessionTitle={renameSessionTitle}
-        onSave={handleSaveRename}
-        onCancel={() => setRenameDialogOpen(false)}
       />
 
       <SessionDeleteDialog
