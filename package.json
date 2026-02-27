@@ -10,6 +10,7 @@
     "landing:deploy": "pnpm landing:build && pnpm -C apps/landing run deploy",
     "landing:preview": "pnpm -C apps/landing preview",
     "preview": "pnpm -C apps/webclaw preview",
+    "start": "pnpm -C apps/webclaw start",
     "test": "pnpm -C apps/webclaw test",
     "lint": "pnpm -C apps/webclaw lint",
     "format": "pnpm -C apps/webclaw format",

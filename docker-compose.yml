@@ -1,0 +1,23 @@
+# WebClaw — TanStack Start chat UI
+# Usage:
+#   docker compose up webclaw
+#   docker compose up -d webclaw
+# Optional: set gateway auth via env or .env:
+#   CLAWDBOT_GATEWAY_TOKEN=... CLAWDBOT_GATEWAY_PASSWORD=... (or CLAWDBOT_GATEWAY_UNLOCK_SECRET)
+
+services:
+  webclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webclaw
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Uncomment and set for gateway auth (or use .env):
+      # - CLAWDBOT_GATEWAY_TOKEN=
+      # - CLAWDBOT_GATEWAY_PASSWORD=
+      # - CLAWDBOT_GATEWAY_UNLOCK_SECRET=
