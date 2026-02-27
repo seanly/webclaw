@@ -285,6 +285,7 @@ export function ChatScreen({
           startRun(payload.runId.trim())
         }
         refreshHistory()
+        queryClient.invalidateQueries({ queryKey: chatQueryKeys.sessions })
       })
       .catch((err) => {
         const messageText = err instanceof Error ? err.message : String(err)
