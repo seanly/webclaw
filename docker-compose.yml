@@ -17,7 +17,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      # Uncomment and set for gateway auth (or use .env):
-      # - CLAWDBOT_GATEWAY_TOKEN=
-      # - CLAWDBOT_GATEWAY_PASSWORD=
-      # - CLAWDBOT_GATEWAY_UNLOCK_SECRET=
+      - CLAWDBOT_GATEWAY_URL=${CLAWDBOT_GATEWAY_URL}
+      - CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
+      - CLAWDBOT_GATEWAY_PASSWORD=${CLAWDBOT_GATEWAY_PASSWORD}
+      - CLAWDBOT_GATEWAY_UNLOCK_SECRET=${CLAWDBOT_GATEWAY_UNLOCK_SECRET:-webclaw-unlock-secret}
